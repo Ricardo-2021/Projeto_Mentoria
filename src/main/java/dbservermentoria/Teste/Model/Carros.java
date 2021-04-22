@@ -34,11 +34,10 @@ public class Carros  {
     private LocalDate criadoEm;
     @JsonFormat(pattern =  "dd/MM/yyyy")
     private LocalDate updated_at;
-   // @Column(name = "category_id")
     @ManyToOne
     @JoinColumn(name = "category_id")
     @NotNull
-   private Categorias categoriaId;
+   private Categorias category_id;
 
 
 
@@ -99,10 +98,12 @@ public class Carros  {
     }
 
    public Categorias getCategoriaId() {
-        return categoriaId;
+        return category_id;
     }
 
     public void setCategoriaId(Categorias categoriaId) {
-        this.categoriaId = categoriaId;
+        this.category_id = categoriaId;
     }
+
+
 }
