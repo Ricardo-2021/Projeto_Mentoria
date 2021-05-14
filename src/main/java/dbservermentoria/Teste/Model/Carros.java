@@ -1,17 +1,14 @@
 package dbservermentoria.Teste.Model;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "car")
-public class Carros  {
-
+public class Carros {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +26,15 @@ public class Carros  {
     @NotNull
     private String marca;
     @Column(name = "created_at")
-    @JsonFormat(pattern =  "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @NotNull
     private LocalDate criadoEm;
-    @JsonFormat(pattern =  "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate updated_at;
     @ManyToOne
     @JoinColumn(name = "category_id")
     @NotNull
-   private Categorias category_id;
-
-
+    private Categorias categoryId;
 
     public LocalDate getUpdated_at() {
         return updated_at;
@@ -97,13 +92,11 @@ public class Carros  {
         this.criadoEm = criadoEm;
     }
 
-   public Categorias getCategoriaId() {
-        return category_id;
+    public Categorias getCategoriaId() {
+        return categoryId;
     }
 
     public void setCategoriaId(Categorias categoriaId) {
-        this.category_id = categoriaId;
+        this.categoryId = categoriaId;
     }
-
-
 }

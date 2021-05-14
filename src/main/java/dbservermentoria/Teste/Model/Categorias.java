@@ -1,12 +1,10 @@
 package dbservermentoria.Teste.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jdk.jfr.Category;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "category")
@@ -16,19 +14,17 @@ public class Categorias {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "name")
-    @NotNull
+    @NotNull(message = "Nome não pode ser nulo")
     private String nome;
     @Column(name = "description")
     @NotNull
     private String descricao;
     @Column(name = "created_at")
-    @JsonFormat(pattern =  "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @NotNull
     private LocalDate criadoEm;
-    @JsonFormat(pattern =  "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate updated_at;
-
-
 
     public LocalDate getUpdated_at() {
         return updated_at;

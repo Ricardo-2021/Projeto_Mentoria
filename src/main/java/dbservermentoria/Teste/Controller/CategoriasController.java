@@ -1,20 +1,21 @@
 package dbservermentoria.Teste.Controller;
 
-import dbservermentoria.Teste.Model.Carros;
+import dbservermentoria.Teste.Exceptions.IdNaoEncontradoNoBancoDeDadosException;
 import dbservermentoria.Teste.Model.Categorias;
 import dbservermentoria.Teste.Repository.CategoriasRepository;
+import dbservermentoria.Teste.Service.CategoriasService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 
 @RestController
 @RequestMapping("/v1/categorias")
@@ -22,74 +23,56 @@ public class CategoriasController {
 
     private CategoriasRepository categoriasRepository;
     private ArrayList<Categorias> categoriasArrayList = new ArrayList<>();
+    private CategoriasService categoriasService;
 
     @Autowired
-    public CategoriasController(CategoriasRepository categoriasRepository) {
+    public CategoriasController(CategoriasRepository categoriasRepository, CategoriasService categoriasService) {
         this.categoriasRepository = categoriasRepository;
+        this.categoriasService = categoriasService;
     }
 
     @PostMapping
-    public ResponseEntity<Categorias> save(@RequestBody Categorias categorias)  {
-
-            Categorias adicionaCategoria = categoriasRepository.save(categorias);
-            return new ResponseEntity<>(adicionaCategoria, HttpStatus.OK);
+    public ResponseEntity<Categorias> saveCategory(@RequestBody @Valid Categorias categorias) {
+        categoriasRepository.save(categorias);
+        return new ResponseEntity<>(categorias, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<Categorias>> getCat() {
+    public ResponseEntity<?> findAllCategory() {
         List<Categorias> listaDeCategorias = categoriasRepository.findAll();
-        return new ResponseEntity<>(listaDeCategorias, HttpStatus.FOUND);
+        if (!listaDeCategorias.isEmpty()) {
+            return new ResponseEntity(listaDeCategorias, HttpStatus.FOUND);
+        }
+        return new ResponseEntity<>("Lista Vazia", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/{categoriaId}")
-    public ResponseEntity findByIdCar(@PathVariable Integer categoriaId) {
-       Optional<Categorias> categoria = categoriasRepository.findById(categoriaId) ;
-      return new ResponseEntity(categoria, HttpStatus.FOUND);
+    public ResponseEntity<?> findByIdCategory(@PathVariable Integer categoriaId) throws IdNaoEncontradoNoBancoDeDadosException {
+        Optional<Categorias> categoriaPorId = categoriasRepository.findById(categoriaId);
+        if (categoriaPorId.isPresent()) {
+            return new ResponseEntity(categoriaPorId, HttpStatus.FOUND);
+        }
+        throw new IdNaoEncontradoNoBancoDeDadosException("");
     }
 
     @DeleteMapping("/{categoriaId}")
-    public  ResponseEntity<?> delete(@PathVariable Integer categoriaId) {
+    public ResponseEntity<?> deletecategory(@PathVariable Integer categoriaId) throws IdNaoEncontradoNoBancoDeDadosException {
 
-      categoriasRepository.deleteById(categoriaId);
-       return new ResponseEntity<>("Veiculo excluido com sucesso.", HttpStatus.FOUND);
+        Optional<Categorias> categoriaDeletada = categoriasRepository.findById(categoriaId);
+        if (categoriaDeletada.isPresent()) {
+            categoriasRepository.deleteById(categoriaId);
+            return new ResponseEntity<>("Categoria excluida com sucesso.", HttpStatus.FOUND);
+        }
+        throw new IdNaoEncontradoNoBancoDeDadosException("");
     }
 
     @PutMapping("/{categoriaId}")
-    public ResponseEntity<?> put(@RequestBody Categorias categoriasBody, @PathVariable Integer categoriaId){
-          for(Categorias categoriaDoCarro : categoriasRepository.findAll()){
-              if (categoriaDoCarro.getId() == categoriaId){
-
-      //  for ( Categorias categoriaDoCarro : categoriasArrayList ){
-           // if (categoriaDoCarro.getId() == categoriaId){
-                BeanUtils.copyProperties(categoriasBody, categoriaDoCarro, "categoriaId");
-                return new ResponseEntity<>(categoriaDoCarro, HttpStatus.FOUND);
-            }
-        }
-        return new ResponseEntity<>("Categoria não encontrada", HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> updateCategory(@RequestBody @Valid Categorias categoria, @PathVariable Integer categoriaId) throws IdNaoEncontradoNoBancoDeDadosException {
+        return new ResponseEntity<>(categoriasService.updateCategory(categoria, categoriaId), HttpStatus.FOUND);
     }
 
     @PatchMapping("/{categoriaId}")
-    public ResponseEntity<?> patch(@RequestBody Categorias categoriasBody, @PathVariable Integer categoriaId){
-        for (Categorias categoriaDoCarro : categoriasArrayList ) {
-            if (categoriaDoCarro.getId() == categoriaId) {
-                BeanUtils.copyProperties(completarCampo(categoriasBody, categoriaDoCarro), categoriaDoCarro, "categoriaId");
-                return new ResponseEntity<>(categoriaDoCarro, HttpStatus.FOUND);
-            }
-        }
-        return new ResponseEntity<>("Categoria não encontrada", HttpStatus.NOT_FOUND);
-    }
-
-    public Categorias completarCampo(Categorias categoriasBody, Categorias categoriaDoCarro){
-        Stream<Field> fields = Stream.of(categoriaDoCarro.getClass().getDeclaredFields());
-        fields.forEach(field -> {
-            try {
-                field.setAccessible(true);
-                if (field.get(categoriasBody) == null)
-                    field.set(categoriasBody, field.get(categoriaDoCarro));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
-        return categoriasBody;
+    public ResponseEntity<?> updateByFieldCategory(@RequestBody @Valid Categorias categoria, @PathVariable Integer categoriaId) throws IdNaoEncontradoNoBancoDeDadosException {
+        return new ResponseEntity<>(categoriasService.updateByFieldCategory(categoria, categoriaId), HttpStatus.FOUND);
     }
 }
