@@ -4,17 +4,15 @@ import dbservermentoria.Teste.Exceptions.IdNaoEncontradoNoBancoDeDadosException;
 import dbservermentoria.Teste.Model.Carros;
 import dbservermentoria.Teste.Repository.CarrosRepository;
 import dbservermentoria.Teste.Service.CarrosService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+
 
 @RestController
 @RequestMapping("/v1/carros")
@@ -25,7 +23,7 @@ public class CarrosController {
     private CarrosService carrosService;
 
     @Autowired
-    public CarrosController(  CarrosRepository carrosRepository, CarrosService carrosService ) {
+    public CarrosController(CarrosRepository carrosRepository, CarrosService carrosService) {
         this.carrosRepository = carrosRepository;
         this.carrosService = carrosService;
     }
@@ -46,7 +44,7 @@ public class CarrosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByIdCar(@PathVariable  Integer id) throws IdNaoEncontradoNoBancoDeDadosException {
+    public ResponseEntity<?> findByIdCar(@PathVariable Integer id) throws IdNaoEncontradoNoBancoDeDadosException {
         Optional<Carros> carroPorId = carrosRepository.findById(id);
         if (carroPorId.isPresent()) {
             return new ResponseEntity<>(carroPorId, HttpStatus.FOUND);
@@ -70,7 +68,7 @@ public class CarrosController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateByFieldCar(@RequestBody  Carros carrosBody, @PathVariable Integer id) throws IdNaoEncontradoNoBancoDeDadosException {
+    public ResponseEntity<Object> updateByFieldCar(@RequestBody Carros carrosBody, @PathVariable Integer id) throws IdNaoEncontradoNoBancoDeDadosException {
         return new ResponseEntity<>(carrosService.updateByFieldCar(carrosBody, id), HttpStatus.FOUND);
     }
 }
