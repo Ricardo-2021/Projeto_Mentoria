@@ -62,6 +62,7 @@ public class Categorias {
         return criadoEm;
     }
 
+
     public void setCriadoEm(LocalDate criadoEm) {
         this.criadoEm = criadoEm;
     }
