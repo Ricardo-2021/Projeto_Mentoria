@@ -10,16 +10,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
-@EnableWebSecurity
+
 @EnableResourceServer
 @Configuration
-public class ResouceSeverConfig extends ResourceServerConfigurerAdapter {
-
-    @Autowired
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin").password("admin").roles("ROLE");
-    }
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -31,7 +25,7 @@ public class ResouceSeverConfig extends ResourceServerConfigurerAdapter {
     }
 
     @Override
-    public void configure(ResourceServerSecurityConfigurer resurces)  {
-        resurces.stateless(true);
+    public void configure(ResourceServerSecurityConfigurer resources)  {
+        resources.stateless(true);
     }
 }
